@@ -12,7 +12,7 @@ app = Flask(__name__)
 load_dotenv() #load the env variable
 
 # 1. Setup Gemini (The Brain)
-genai.configure(api_key="AIzaSyDNjuZtMXNtiQgw0zeXwuzdoEuTfykLNO0")
+genai.configure(api_key=os.getenv("GEN_AI"))
 model = genai.GenerativeModel('gemini-2.5-flash')
 
 # 2. Setup Google Sheets (The Database)
