@@ -7,6 +7,8 @@ import google.generativeai as genai
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import requests
+import hmac
+import hashlib
 
 app = Flask(__name__)
 load_dotenv() #load the env variable
@@ -24,6 +26,26 @@ model = genai.GenerativeModel('gemini-2.5-flash')
 # 3. WhatsApp Helper Functions
 WHATSAPP_TOKEN = os.getenv("WHATSAPP_TOKEN")
 PHONE_NUMBER_ID = os.getenv("PHONE_NUMBER_ID")
+
+
+APP_SECRET = os.getenv("APP_SECRET") # Get this from Meta App Dashboard -> Basic Settings
+
+def verify_signature(request):
+    signature = request.headers.get('X-Hub-Signature-256')
+    if not signature:
+        return False
+    
+    # Clean the signature (remove 'sha256=')
+    signature = signature.replace("sha256=", "")
+    
+    # Calculate your own signature
+    expected_signature = hmac.new(
+        key=APP_SECRET.encode(), 
+        msg=request.data, 
+        digestmod=hashlib.sha256
+    ).hexdigest()
+    
+    return hmac.compare_digest(signature, expected_signature)
 
 def send_whatsapp_message(to_number, text_body):
     url = f"https://graph.facebook.com/v22.0/1029286163594215/messages"
@@ -79,6 +101,11 @@ def webhook():
 
     # HANDLING MESSAGES
     if request.method == 'POST':
+
+        if not verify_signature(request):
+            return "Signature Mismatch", 403
+        
+
         data = request.json
         # Extract the message details safely
         try:
