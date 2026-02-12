@@ -1,21 +1,18 @@
 import multiprocessing
 import os
 
-# The socket to bind
-bind = "0.0.0.0:8000"
+# Railway dynamically assigns a port, so we must use the PORT env var
+bind = "0.0.0.0:" + os.getenv("PORT", "5001")
 
-# Number of worker processes (often calculated based on CPU cores)
 workers = multiprocessing.cpu_count() * 2 + 1
 
-# Logging configuration
 loglevel = os.getenv("LOG_LEVEL", "info")
-accesslog = "-" # Log to stdout
-errorlog = "-"  # Log to stderr
+accesslog = "-" 
+errorlog = "-" 
 
-# Timeouts
-timeout = 120 # Workers silent for more than this many seconds are killed and restarted
+timeout = 120 
 graceful_timeout = 120
-keepalive = 5 # Seconds to wait for requests on a Keep-Alive connection
+keepalive = 5 
 
-# WSGI application path
-wsgi_app = "main:app"
+# Set this to "app:app" if your file is app.py
+wsgi_app = "app:app"

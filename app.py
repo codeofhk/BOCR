@@ -180,4 +180,5 @@ def webhook():
 if __name__ == '__main__':
     
    # print(send_whatsapp_message("916379190592", "what are even doing bro"))
-    app.run(port=5001)
+    port = int(os.environ.get("PORT",5001))
+    app.run(host="0.0.0.0",port=port)
