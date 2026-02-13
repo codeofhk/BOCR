@@ -48,7 +48,7 @@ def verify_signature(request):
     return hmac.compare_digest(signature, expected_signature)
 
 def send_whatsapp_message(to_number, text_body):
-    url = f"https://graph.facebook.com/v22.0/1029286163594215/messages"
+    url = f"https://graph.facebook.com/v22.0/{os.getenv("PHONE_NUMBER_ID")}/messages"
     headers = {
         "Authorization": f"Bearer {WHATSAPP_TOKEN}",
         "Content-Type": "application/json"
